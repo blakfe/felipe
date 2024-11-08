@@ -174,19 +174,39 @@
             color: #ff69b4;
         }
 
-        /* Estilos do iframe */
-        #whatsapp-iframe {
+        /* Estilos do mini chat (WhatsApp) */
+        #whatsapp-chat {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 400px;
-            border: none;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
             background-color: #fff;
-            z-index: 100;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
             display: none; /* Inicialmente escondido */
+            overflow: hidden;
         }
 
+        #whatsapp-chat iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Botão de minimizar */
+        #minimize-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff1493;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -206,7 +226,7 @@
     <!-- Barra de comentário -->
     <div id="comment-bar">
         <input type="text" id="comment-input" placeholder="Digite sua mensagem aqui...">
-        <button onclick="sendToWhatsApp()">Enviar para o WhatsApp</button>
+        <button onclick="openWhatsAppChat()">Enviar para o WhatsApp</button>
     </div>
 
     <!-- Efeito de flocos de neve caindo -->
@@ -216,14 +236,17 @@
     <div class="snowflake" style="left: 70%; animation-duration: 25s; font-size: 40px;">❄</div>
     <div class="snowflake" style="left: 90%; animation-duration: 30s; font-size: 20px;">❄</div>
 
+    <!-- Mini tela de chat (WhatsApp) -->
+    <div id="whatsapp-chat">
+        <button id="minimize-btn" onclick="toggleChat()">-</button>
+        <iframe id="whatsapp-iframe" src="" frameborder="0"></iframe>
+    </div>
+
     <!-- Conteúdo Principal da Loja -->
     <div id="main-content">
         <h1>Tá curioso, hein!</h1>
         <p>Breve vem novidade, por enquanto nada :)</p>
     </div>
-
-    <!-- Iframe do WhatsApp -->
-    <iframe id="whatsapp-iframe" src=""></iframe>
 
     <script>
         // Função para iniciar a animação de carregamento
@@ -257,16 +280,28 @@
             document.getElementById('main-content').style.display = 'block';
         }
 
-        // Função para enviar a mensagem via WhatsApp
-        function sendToWhatsApp() {
+        // Função para abrir o WhatsApp Web na mini tela
+        function openWhatsAppChat() {
             var message = document.getElementById('comment-input').value;
             if (message.trim() === "") {
                 alert("Digite uma mensagem para enviar.");
                 return;
             }
             var whatsappUrl = `https://web.whatsapp.com/send?phone=+5585991258335&text=${encodeURIComponent(message)}`;
-            document.getElementById('whatsapp-iframe').src = whatsappUrl;
-            document.getElementById('whatsapp-iframe').style.display = 'block';
+            document.getElementById('whatsapp-chat').style.display = 'block'; // Mostrar o chat
+            document.getElementById('whatsapp-iframe').src = whatsappUrl; // Carregar o WhatsApp dentro do iframe
+        }
+
+        // Função para minimizar ou abrir a tela do WhatsApp
+        function toggleChat() {
+            var chat = document.getElementById('whatsapp-chat');
+            if (chat.style.height === '50px') {
+                chat.style.height = '500px';
+                document.getElementById('minimize-btn').innerText = '-';
+            } else {
+                chat.style.height = '50px';
+                document.getElementById('minimize-btn').innerText = '+';
+            }
         }
 
         // Inicia o carregamento na página
