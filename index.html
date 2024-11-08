@@ -32,10 +32,29 @@
             z-index: 10;
         }
 
+        /* Efeito de carregamento do título */
         #loading-container h1 {
             color: #ff69b4;
             font-size: 1.5em;
             margin-bottom: 20px;
+            display: inline-block;
+            animation: pulseDots 1.5s infinite;
+        }
+
+        /* Animação dos pontos pulando */
+        @keyframes pulseDots {
+            0%, 100% {
+                content: "Carregando";
+            }
+            25% {
+                content: "Carregando.";
+            }
+            50% {
+                content: "Carregando..";
+            }
+            75% {
+                content: "Carregando...";
+            }
         }
 
         /* Barra de carregamento */
@@ -46,25 +65,106 @@
             border: 4px solid #32cd32;
             overflow: hidden;
             margin-bottom: 20px;
+            position: relative;
+            z-index: 1; /* Barra abaixo do círculo */
         }
 
+        /* Barrinha de "gelo" */
         .loading-fill {
             width: 0;
             height: 100%;
+            background: linear-gradient(to right, #add8e6, #b0e0e6, #add8e6); /* Gradiente de azul claro/gelo */
+            box-shadow: 0 0 10px rgba(173, 216, 230, 0.8); /* Efeito de brilho */
+            transition: width 5s ease;
+        }
+
+        /* Círculo sobre a barra de carregamento */
+        #loading-circle {
+            position: absolute;
+            top: -25px; /* Move o círculo para cima da barra */
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-image: url('https://i.ibb.co/D49h95n/file.png'); /* URL da imagem para o círculo */
+            background-size: cover;
+            transition: left 5s ease, opacity 1s ease;
+            z-index: 2;  /* Círculo fica acima da barra */
+        }
+
+        /* Barra de comentário */
+        #comment-bar {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background-color: #32cd32;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #comment-bar input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        #comment-bar button {
+            padding: 10px 20px;
             background-color: #ff69b4;
-            transition: width 3s ease;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        #comment-bar button:hover {
+            background-color: #ff1493;
+        }
+
+        /* Efeito de neve caindo no fundo (fundo natalino) */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: #fff;
+            font-size: 20px;
+            pointer-events: none;
+            animation: snow 10s linear infinite;
+        }
+
+        @keyframes snow {
+            0% {
+                top: -10px;
+                opacity: 1;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+            }
         }
 
         /* Botão de iniciar */
         #start-button {
-            display: none;
-            background-color: #32cd32;
-            color: #ffffff;
+            display: none; /* Inicialmente oculto */
+            background: linear-gradient(to right, #add8e6, #b0e0e6, #add8e6); /* Mesma cor da barrinha de gelo */
+            color: #000000; /* Texto preto */
             padding: 15px 30px;
-            border: 4px solid #ff69b4;
+            border: 4px solid #32cd32;
             font-size: 1em;
             cursor: pointer;
             text-decoration: none;
+            margin-top: 20px;
+            transition: background 0.3s ease;
+        }
+
+        #start-button:hover {
+            background: linear-gradient(to right, #b0e0e6, #add8e6, #b0e0e6); /* Mudança de cor ao passar o mouse */
         }
 
         /* Conteúdo da loja */
@@ -101,36 +201,69 @@
 </head>
 <body>
 
+    <!-- Música do YouTube (em Background) -->
+    <iframe id="background-music" width="0" height="0" src="https://www.youtube.com/embed/5rGA7DAfd6M?autoplay=1&mute=0&loop=1&playlist=5rGA7DAfd6M" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
     <!-- Tela de Loading -->
     <div id="loading-container">
-        <h1>Carregando...</h1>
+        <h1>Carregando<span class="dots">...</span></h1>
         <div class="loading-bar">
             <div class="loading-fill" id="loading-fill"></div>
+            <!-- Círculo sobre a barra, mas sincronizado com o carregamento -->
+            <div id="loading-circle"></div>
         </div>
         <button id="start-button" onclick="showMainContent()">Iniciar</button>
     </div>
 
+    <!-- Barra de comentário -->
+    <div id="comment-bar">
+        <input type="text" id="comment-input" placeholder="Digite sua mensagem aqui...">
+        <button onclick="sendToWhatsApp()">Enviar para o WhatsApp</button>
+    </div>
+
+    <!-- Efeito de flocos de neve caindo -->
+    <div class="snowflake" style="left: 10%; animation-duration: 12s; font-size: 25px;">❄</div>
+    <div class="snowflake" style="left: 30%; animation-duration: 15s; font-size: 30px;">❄</div>
+    <div class="snowflake" style="left: 50%; animation-duration: 20s; font-size: 35px;">❄</div>
+    <div class="snowflake" style="left: 70%; animation-duration: 25s; font-size: 40px;">❄</div>
+    <div class="snowflake" style="left: 90%; animation-duration: 30s; font-size: 20px;">❄</div>
+
     <!-- Conteúdo Principal da Loja -->
     <div id="main-content">
-        <h1>ta curioso hem!</h1>
-        <p>breve vem novidade por enqunto nada :</p>
+        <h1>Tá curioso, hein!</h1>
+        <p>Breve vem novidade, por enquanto nada :)</p>
 
-        <script>
+    <script>
         // Função para iniciar a animação de carregamento
         function startLoading() {
-            // Anima a barra de preenchimento
+            // Anima a barra de preenchimento para 100% de largura
             document.getElementById('loading-fill').style.width = '100%';
 
-            // Mostra o botão de iniciar após 15 segundos
+            // Move o círculo para a direita enquanto o carregamento ocorre
+            document.getElementById('loading-circle').style.left = '100%';
+
+            // Faz o círculo desaparecer ao chegar a 100%
+            setTimeout(() => {
+                document.getElementById('loading-circle').style.opacity = '0';
+            }, 5000);
+
+            // Mostra o botão de iniciar após 5 segundos (quando o carregamento atingir 100%)
             setTimeout(() => {
                 document.getElementById('start-button').style.display = 'inline-block';
-            }, 3000);
+            }, 5000);  // Botão aparece após 5 segundos
         }
 
         // Função para exibir o conteúdo principal e esconder o loading
         function showMainContent() {
             document.getElementById('loading-container').style.display = 'none'; // Oculta o loading
             document.getElementById('main-content').style.display = 'block'; // Mostra o conteúdo principal
+        }
+
+        // Função para enviar a mensagem ao WhatsApp
+        function sendToWhatsApp() {
+            var message = document.getElementById('comment-input').value;
+            var whatsappUrl = `https://wa.me/+5585991258335?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
         }
 
         // Inicia a animação de carregamento quando a página é carregada
