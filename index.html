@@ -1,12 +1,141 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Currículo - Felipe Rodrigues</title>
+    <title>Loja Game - Carregando</title>
     <style>
-     </head>
+        /* Estilos gerais */
+        body {
+            font-family: 'Press Start 2P', cursive;
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            color: #fff;
+            overflow: hidden;
+            background-image: linear-gradient(45deg, #2b2b2b 25%, #333 25%, #333 50%, #2b2b2b 50%, #2b2b2b 75%, #333 75%, #333);
+            background-size: 10px 10px;
+        }
+
+        /* Container de loading */
+        #loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #222;
+            z-index: 10;
+        }
+
+        #loading-container h1 {
+            color: #ff69b4;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        /* Barra de carregamento */
+        .loading-bar {
+            width: 300px;
+            height: 30px;
+            background-color: #555;
+            border: 4px solid #32cd32;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .loading-fill {
+            width: 0;
+            height: 100%;
+            background-color: #ff69b4;
+            transition: width 3s ease;
+        }
+
+        /* Botão de iniciar */
+        #start-button {
+            display: none;
+            background-color: #32cd32;
+            color: #ffffff;
+            padding: 15px 30px;
+            border: 4px solid #ff69b4;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Conteúdo da loja */
+        #main-content {
+            display: none;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .product-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            width: 200px;
+            background-color: #333;
+            border: 4px solid #32cd32;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 0 10px #000;
+        }
+
+        .product-card h3 {
+            color: #ff69b4;
+        }
+
+        /* Fonte estilo game */
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    </style>
+</head>
+<body>
+
+    <!-- Tela de Loading -->
+    <div id="loading-container">
+        <h1>Carregando...</h1>
+        <div class="loading-bar">
+            <div class="loading-fill" id="loading-fill"></div>
+        </div>
+        <button id="start-button" onclick="showMainContent()">Iniciar</button>
+    </div>
+
+    <!-- Conteúdo Principal da Loja -->
+    <div id="main-content">
+        <h1>ta curioso hem!</h1>
+        <p>breve vem novidade por enqunto nada :</p>
+
+        <script>
+        // Função para iniciar a animação de carregamento
+        function startLoading() {
+            // Anima a barra de preenchimento
+            document.getElementById('loading-fill').style.width = '100%';
+
+            // Mostra o botão de iniciar após 3 segundos
+            setTimeout(() => {
+                document.getElementById('start-button').style.display = 'inline-block';
+            }, 3000);
+        }
+
+        // Função para exibir o conteúdo principal e esconder o loading
+        function showMainContent() {
+            document.getElementById('loading-container').style.display = 'none'; // Oculta o loading
+            document.getElementById('main-content').style.display = 'block'; // Mostra o conteúdo principal
+        }
+
+        // Inicia a animação de carregamento quando a página é carregada
+        window.onload = startLoading;
+    </script>
+
 </body>
 </html>
-
