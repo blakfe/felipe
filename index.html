@@ -1,320 +1,277 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lojinha do lipe - Carregando</title>
+    <title>Loading - Loja LIPE</title>
     <style>
-        /* Estilos gerais */
+        /* Estilos para a tela de carregamento */
         body {
-            font-family: 'Press Start 2P', cursive;
             margin: 0;
             padding: 0;
-            background-color: #222;
+            height: 100vh;
+            background: url('https://img.freepik.com/vetores-premium/personagem-de-desenho-animado-com-oculos-e-uma-camisa-3d_1027727-7817.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
             color: #fff;
-            overflow: hidden;
-            background-image: linear-gradient(45deg, #2b2b2b 25%, #333 25%, #333 50%, #2b2b2b 50%, #2b2b2b 75%, #333 75%, #333);
-            background-size: 10px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
-
-        /* Container de loading */
-        #loading-container {
-            position: fixed;
+        .overlay {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-color: #222;
-            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
         }
-
-        /* Efeito de carregamento do título */
-        #loading-container h1 {
-            color: #ff69b4;
-            font-size: 2em;
+        .logo {
+            font-size: 40px;
+            font-weight: bold;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.9);
+            z-index: 2;
             margin-bottom: 20px;
-            display: inline-block;
         }
-
-        /* Barra de carregamento */
-        .loading-bar {
-            width: 80%;
-            max-width: 500px;
-            height: 30px;
-            background-color: #555;
-            border: 4px solid #32cd32;
+        .loading-text {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            animation: fadeInOut 2s infinite;
+            z-index: 2;
+        }
+        .loading-bar-container {
+            width: 60%;
+            height: 20px;
+            background-color: #333;
+            border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 20px;
-            position: relative;
+            margin: 20px 0;
+            z-index: 2;
         }
-
-        .loading-fill {
-            width: 0;
+        .loading-bar {
             height: 100%;
-            background: linear-gradient(to right, #add8e6, #b0e0e6, #add8e6);
-            box-shadow: 0 0 10px rgba(173, 216, 230, 0.8);
-            transition: width 5s ease;
+            width: 0;
+            background-color: #4DF1F4;
+            border-radius: 10px;
+            animation: loading 20s linear forwards;
         }
-
-        #loading-circle {
-            position: absolute;
-            top: -25px;
-            left: 0;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-image: url('https://i.ibb.co/D49h95n/file.png');
-            background-size: cover;
-            transition: left 5s ease, opacity 1s ease;
+        /* Animações */
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
-
-        /* Barra de comentário */
-        #comment-bar {
-            position: fixed;
-            bottom: 20px;
+        @keyframes loading {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+        .tips {
+            font-size: 15px;
+            margin-top: 10px;
+            z-index: 2;
+        }
+        .main-screen {
+            display: none;
+            color: #fff;
+            z-index: 3;
+            text-align: center;
+        }
+        /* Estilos para a página de produtos */
+        header {
             width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            background-color: #32cd32;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        #comment-bar input[type="text"] {
-            width: 70%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            margin-right: 10px;
-        }
-
-        #comment-bar button {
-            padding: 10px 20px;
-            background-color: #ff69b4;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-
-        #comment-bar button:hover {
-            background-color: #ff1493;
-        }
-
-        /* Efeito de neve caindo */
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: #fff;
-            font-size: 20px;
-            pointer-events: none;
-            animation: snow 10s linear infinite;
-        }
-
-        @keyframes snow {
-            0% {
-                top: -10px;
-                opacity: 1;
-            }
-            100% {
-                top: 100vh;
-                opacity: 0;
-            }
-        }
-
-        /* Botão de iniciar */
-        #start-button {
-            display: none;
-            background: linear-gradient(to right, #add8e6, #b0e0e6, #add8e6);
-            color: #000;
-            padding: 15px 30px;
-            border: 4px solid #32cd32;
-            font-size: 1.2em;
-            cursor: pointer;
-            text-decoration: none;
-            margin-top: 20px;
-            transition: background 0.3s ease, opacity 1s ease;
-        }
-
-        #start-button:hover {
-            background: linear-gradient(to right, #b0e0e6, #add8e6, #b0e0e6);
-        }
-
-        /* Conteúdo da loja */
-        #main-content {
-            display: none;
+            background-color: #4DF1F4;
             padding: 20px;
+            color: white;
+            font-size: 2em;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            width: 100%;
+        }
+        .product-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid #f1f1f1;
+        }
+        .product-info {
+            padding: 15px;
+        }
+        .product-title {
+            font-size: 1.3em;
+            margin: 10px 0;
+        }
+        .product-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .product-price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4DF1F4;
+        }
+        .add-to-cart {
+            background-color: #4DF1F4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .add-to-cart:hover {
+            background-color: #33b0b7;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #4DF1F4;
+            padding: 10px;
+            color: white;
             text-align: center;
         }
 
-        /* Estilos do mini chat (WhatsApp) */
-        #whatsapp-chat {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 350px;
-            height: 500px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            overflow: hidden;
-        }
-
-        #whatsapp-chat iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* Botão de minimizar */
-        #minimize-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ff1493;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        /* Controles de som */
-        #sound-control {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            padding: 10px;
-            background-color: #ff69b4;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        /* Ajustes para responsividade */
+        @media (max-width: 768px) {
+            .product-grid {
+                padding: 10px;
+            }
+            .product-card {
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Música de fundo -->
-    <iframe id="background-music" width="0" height="0" src="https://www.youtube.com/embed/qxiuRX2bees?autoplay=1&mute=0&loop=1&playlist=qxiuRX2bees" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <!-- Música de fundo do YouTube (escondida inicialmente) -->
+    <div id="music-container" style="display: block;">
+        <iframe id="music-iframe" width="0" height="0" src="https://www.youtube.com/embed/Vzf4LKAfENs?autoplay=1&loop=1&playlist=Vzf4LKAfENs&controls=0&mute=0" frameborder="0" allow="autoplay"></iframe>
+    </div>
 
-    <!-- Controle de som -->
-    <button id="sound-control" onclick="toggleSound()">🔊 Desligar Som</button>
+    <!-- Tela de Carregamento -->
+    <div class="overlay"></div>
+    <div class="logo">LIPE</div>
+    <div class="loading-text" id="loadingText">
+        Carregando aguarde...
+    </div>
+    <div class="loading-bar-container">
+        <div class="loading-bar"></div>
+    </div>
+    <div class="tips">
+        <p>Carregando... Dica: Explore os bairros de Los Santos para encontrar missões secretas!</p>
+    </div>
 
-    <!-- Tela de Loading -->
-    <div id="loading-container">
-        <h1 id="loading-title">Carregando<span class="dots"></span></h1>
-        <div class="loading-bar">
-            <div class="loading-fill" id="loading-fill"></div>
-            <div id="loading-circle"></div>
+    <!-- Tela inicial que será exibida após o carregamento -->
+    <div class="main-screen" style="display: none;">
+        <h1>Bem-vindo à Loja LIPE!</h1>
+        <p>Explore os produtos e aproveite as ofertas!</p>
+        <button onclick="entrar()">Entrar</button>
+    </div>
+
+    <!-- Página de Produtos -->
+    <div class="product-page" style="display: none;">
+        <header>
+            Loja LIPE - Produtos em Oferta
+        </header>
+        <div class="product-grid">
+            <!-- Produto 1 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200" alt="Produto 1" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">Produto 1</h3>
+                    <p class="product-description">Descrição breve do produto 1. Ótima qualidade e super recomendado.</p>
+                    <p class="product-price">R$ 99,99</p>
+                    <button class="add-to-cart">Adicionar ao Carrinho</button>
+                </div>
+            </div>
+
+            <!-- Produto 2 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200" alt="Produto 2" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">Produto 2</h3>
+                    <p class="product-description">Produto incrível, com diversas funcionalidades e excelente preço.</p>
+                    <p class="product-price">R$ 149,99</p>
+                    <button class="add-to-cart">Adicionar ao Carrinho</button>
+                </div>
+            </div>
+
+            <!-- Produto 3 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200" alt="Produto 3" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">Produto 3</h3>
+                    <p class="product-description">Este produto oferece excelente durabilidade e conforto.</p>
+                    <p class="product-price">R$ 199,99</p>
+                    <button class="add-to-cart">Adicionar ao Carrinho</button>
+                </div>
+            </div>
         </div>
-        <button id="start-button" onclick="showMainContent()">Iniciar</button>
-    </div>
 
-    <!-- Barra de comentário -->
-    <div id="comment-bar">
-        <input type="text" id="comment-input" placeholder="Digite sua mensagem aqui...">
-        <button onclick="openWhatsAppChat()">Enviar para o WhatsApp</button>
-    </div>
-
-    <!-- Efeito de flocos de neve caindo -->
-    <div class="snowflake" style="left: 10%; animation-duration: 12s; font-size: 25px;">❄</div>
-    <div class="snowflake" style="left: 30%; animation-duration: 15s; font-size: 30px;">❄</div>
-    <div class="snowflake" style="left: 50%; animation-duration: 20s; font-size: 35px;">❄</div>
-    <div class="snowflake" style="left: 70%; animation-duration: 25s; font-size: 40px;">❄</div>
-    <div class="snowflake" style="left: 90%; animation-duration: 30s; font-size: 20px;">❄</div>
-
-    <!-- Mini tela de chat (WhatsApp) -->
-    <div id="whatsapp-chat">
-        <button id="minimize-btn" onclick="toggleChat()">-</button>
-        <iframe id="whatsapp-iframe" src="" frameborder="0"></iframe>
-    </div>
-
-    <!-- Conteúdo Principal da Loja -->
-    <div id="main-content">
-        <h1>Tá curioso, hein!</h1>
-        <p>Breve vem novidade, por enquanto nada :)</p>
+        <footer>
+            &copy; 2024 Loja LIPE | Todos os direitos reservados.
+        </footer>
     </div>
 
     <script>
-        // Função para iniciar a animação de carregamento
-        function startLoading() {
-            document.getElementById('loading-fill').style.width = '100%';
-            document.getElementById('loading-circle').style.left = '100%';
-            setTimeout(() => {
-                document.getElementById('loading-circle').style.opacity = '0';
-            }, 5000);
-            setTimeout(() => {
-                document.getElementById('start-button').style.display = 'inline-block';
-            }, 5000);
-            animateDots();
+        const tips = [
+            "Carregando... atenção : Culto de crianças 06/11 quarta!",
+            "Carregando... atenção : Culto de Doutrina 08/11 sexta!",
+            "Carregando... atenção : multidão para o término do novo tempo 10/11 domingo",
+            "Carregando... atenção : Culto público 10/11 domingo"
+        ];
+
+        let tipIndex = 0;
+        const tipsElement = document.querySelector('.tips p');
+
+        setInterval(() => {
+            tipIndex = (tipIndex + 1) % tips.length;
+            tipsElement.textContent = tips[tipIndex];
+        }, 5000);
+
+        // Função para redirecionar para a página de produtos após o carregamento
+        setTimeout(() => {
+            document.querySelector('.overlay').style.display = 'none';
+            document.querySelector('.logo').style.display = 'none';
+            document.querySelector('.loading-bar-container').style.display = 'none';
+            document.querySelector('.tips').style.display = 'none';
+            document.querySelector('.loading-text').style.display = 'none'; // Esconde o texto "Carregando aguarde..."
+            document.querySelector('.main-screen').style.display = 'block';
+        }, 20000); // 20 segundos para exibir a tela inicial
+
+        // Função para esconder o carregamento, parar a música e mostrar a página de produtos
+        function entrar() {
+            // Parar a música ao fechar o iframe
+            const iframe = document.getElementById('music-iframe');
+            iframe.src = "";  // Isso vai parar o vídeo/música
+
+            // Esconde a tela de carregamento
+            document.querySelector('.main-screen').style.display = 'none';
+            // Exibe a página de produtos
+            document.querySelector('.product-page').style.display = 'block';
         }
-
-        // Função para animar os pontos de carregamento
-        function animateDots() {
-            const title = document.getElementById('loading-title');
-            const dots = title.querySelector('.dots');
-            let dotCount = 0;
-
-            setInterval(() => {
-                dotCount = (dotCount + 1) % 4;
-                dots.textContent = '.'.repeat(dotCount);
-            }, 500);
-        }
-
-        // Função para exibir o conteúdo principal e esconder o loading
-        function showMainContent() {
-            document.getElementById('loading-container').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-        }
-
-        // Função para abrir o WhatsApp Web diretamente em uma nova aba
-        function openWhatsAppChat() {
-            var message = document.getElementById('comment-input').value;
-            if (message.trim() === "") {
-                alert("Digite uma mensagem para enviar.");
-                return;
-            }
-            var whatsappUrl = `https://web.whatsapp.com/send?phone=+5585991258335&text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-        }
-
-        // Função para minimizar ou abrir a tela do WhatsApp
-        function toggleChat() {
-            var chat = document.getElementById('whatsapp-chat');
-            if (chat.style.height === '50px') {
-                chat.style.height = '500px';
-                document.getElementById('minimize-btn').innerText = '-';
-            } else {
-                chat.style.height = '50px';
-                document.getElementById('minimize-btn').innerText = '+';
-            }
-        }
-
-        // Função para alternar o som
-        function toggleSound() {
-            var iframe = document.getElementById('background-music');
-            var soundControlButton = document.getElementById('sound-control');
-            if (iframe.src.includes('mute=0')) {
-                iframe.src = iframe.src.replace('mute=0', 'mute=1');
-                soundControlButton.textContent = "🔊 Ligar Som";
-            } else {
-                iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                soundControlButton.textContent = "🔊 Desligar Som";
-            }
-        }
-
-        // Inicia o carregamento na página
-        window.onload = startLoading;
     </script>
 
 </body>
