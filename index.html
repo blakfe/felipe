@@ -1,50 +1,254 @@
-<html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>
-   FELIPE
-  </title>
-  <script src="https://cdn.tailwindcss.com">
-  </script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
-  <style>
-   body {
+<html>
+<head>
+    <title>Desafio Bíblico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body {
             font-family: 'Roboto', sans-serif;
+            background: url('https://i.ytimg.com/vi/5SrzrH_CWxY/maxresdefault.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
-  </style>
- </head>
- <body class="bg-black text-white">
-  <header class="flex justify-between items-center p-4 bg-black bg-opacity-75 fixed w-full z-10">
-   <div class="flex items-center space-x-4">
-    <img alt="Logo placeholder" class="h-8" height="50" src="" width="100"/>
-   </div>
-   <div class="flex items-center space-x-4">
-    <i class="fas fa-search text-white">
-    </i>
-    <i class="fas fa-bell text-white">
-    </i>
-    <img alt="User profile picture placeholder" class="h-8 w-8 rounded-full" height="30" src="https://i.ibb.co/RPTr3LW/Sem-T-tulo-1.png" width="30"/>
-   </div>
-  </header>
-  <main class="pt-16">
-   <section class="relative">
-    <div class="w-full h-screen">
-     <iframe allow="autoplay; encrypted-media" allowfullscreen="" class="w-full h-full" frameborder="0" src="https://www.youtube.com/embed/8z0WF7fCR34?autoplay=1&amp;mute=0">
-     </iframe>
+        .title {
+            font-size: 3rem;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        .question {
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        .answer {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .answer:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .timer {
+            font-size: 2rem;
+            color: #FF4500;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        .result {
+            font-size: 2rem;
+            color: #32CD32;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        .loading {
+            font-size: 2rem;
+            color: #FFFFFF;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        .loading-screen {
+            background-color: #000000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .progress-bar {
+            width: 80%;
+            background-color: #ddd;
+            border-radius: 25px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .progress-bar-fill {
+            height: 30px;
+            width: 0;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            border-radius: 25px;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen">
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading">Carregando...</div>
+        <div class="progress-bar">
+            <div id="progress-bar-fill" class="progress-bar-fill">0%</div>
+        </div>
     </div>
-    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent">
+    <div id="quiz-container" class="mt-8 animate__animated animate__fadeInUp hidden">
+        <div class="text-center">
+            <div class="title">Desafio Bíblico</div>
+        </div>
+        <div id="question-container" class="mt-8">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+        <div id="timer" class="timer mt-4">Tempo: 10s</div>
+        <div id="result" class="result mt-4 hidden">
+            <!-- Result will be shown here -->
+        </div>
     </div>
-    <div class="absolute bottom-16 left-8 md:left-16 space-y-4">
-     <h1 class="text-4xl md:text-6xl font-bold">
-      MENSAGEM DE DEUS PARA VOCÊ
-     </h1>
-     <p class="max-w-md text-lg md:text-xl">
-      NÃO SEJA PALHA SEJA TRIGO
-     </p>
-    </div>
-   </section>
-  </main>
- </body>
+    <script>
+        const questions = [
+            {
+                question: "Quem foi lançado na cova dos leões?",
+                answers: [
+                    { text: "a) Moisés", correct: false },
+                    { text: "b) Elias", correct: false },
+                    { text: "c) Daniel", correct: true },
+                    { text: "d) José", correct: false }
+                ]
+            },
+            {
+                question: "Quem construiu a arca?",
+                answers: [
+                    { text: "a) Abraão", correct: false },
+                    { text: "b) Noé", correct: true },
+                    { text: "c) Davi", correct: false },
+                    { text: "d) Salomão", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi engolido por um grande peixe?",
+                answers: [
+                    { text: "a) Jonas", correct: true },
+                    { text: "b) Pedro", correct: false },
+                    { text: "c) Paulo", correct: false },
+                    { text: "d) João", correct: false }
+                ]
+            },
+            {
+                question: "Quem recebeu os Dez Mandamentos?",
+                answers: [
+                    { text: "a) Josué", correct: false },
+                    { text: "b) Moisés", correct: true },
+                    { text: "c) Arão", correct: false },
+                    { text: "d) Davi", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi o primeiro homem?",
+                answers: [
+                    { text: "a) Noé", correct: false },
+                    { text: "b) Abraão", correct: false },
+                    { text: "c) Adão", correct: true },
+                    { text: "d) Enoque", correct: false }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let currentPlayer = 0;
+        let timer;
+        let timeLeft = 10;
+
+        function loadQuiz() {
+            const quizContainer = document.getElementById('question-container');
+            quizContainer.innerHTML = '';
+
+            if (currentQuestionIndex < questions.length) {
+                const q = questions[currentQuestionIndex];
+                const questionElement = document.createElement('div');
+                questionElement.classList.add('question', 'mt-8');
+                questionElement.innerText = q.question;
+
+                const answersContainer = document.createElement('div');
+                answersContainer.classList.add('flex', 'flex-col', 'items-center', 'mt-4', 'space-y-4');
+
+                q.answers.forEach(answer => {
+                    const answerElement = document.createElement('div');
+                    answerElement.classList.add('answer', 'animate__animated', 'animate__bounceIn');
+                    answerElement.innerText = answer.text;
+                    answerElement.onclick = () => checkAnswer(answerElement, answer.correct);
+                    answersContainer.appendChild(answerElement);
+                });
+
+                quizContainer.appendChild(questionElement);
+                quizContainer.appendChild(answersContainer);
+
+                startTimer();
+            } else {
+                showResult();
+            }
+        }
+
+        function startTimer() {
+            timeLeft = 10;
+            document.getElementById('timer').innerText = `Tempo: ${timeLeft}s`;
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = `Tempo: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    currentQuestionIndex++;
+                    currentPlayer = (currentPlayer + 1) % 4;
+                    loadQuiz();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(element, isCorrect) {
+            clearInterval(timer);
+            if (isCorrect) {
+                element.style.backgroundColor = 'green';
+                scores[currentPlayer]++;
+            } else {
+                element.style.backgroundColor = 'red';
+            }
+            setTimeout(() => {
+                currentQuestionIndex++;
+                currentPlayer = (currentPlayer + 1) % 4;
+                loadQuiz();
+            }, 1000);
+        }
+
+        function showResult() {
+            document.getElementById('question-container').classList.add('hidden');
+            document.getElementById('timer').classList.add('hidden');
+            const resultElement = document.getElementById('result');
+            resultElement.classList.remove('hidden');
+            resultElement.innerHTML = `
+                <p>Resultado:</p>
+                <p>Jogador 1: ${scores[0]} pontos</p>
+                <p>Jogador 2: ${scores[1]} pontos</p>
+                <p>Jogador 3: ${scores[2]} pontos</p>
+                <p>Jogador 4: ${scores[3]} pontos</p>
+            `;
+        }
+
+        function showQuiz() {
+            document.getElementById('loading-screen').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            loadQuiz();
+        }
+
+        function updateProgressBar() {
+            let progress = 0;
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const interval = setInterval(() => {
+                progress += 1;
+                progressBarFill.style.width = `${progress}%`;
+                progressBarFill.innerText = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    showQuiz();
+                }
+            }, 30); // Adjust the speed of the loading bar here
+        }
+
+        window.onload = () => {
+            updateProgressBar();
+        };
+    </script>
+</body>
 </html>
