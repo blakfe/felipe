@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Desafio Bíblico</title>
+    <title>Desafio Bíblico Multijogador</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
@@ -79,15 +79,24 @@
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen">
-    <div id="loading-screen" class="loading-screen">
+    <div id="loading-screen" class="loading-screen hidden">
         <div class="loading">Carregando...</div>
         <div class="progress-bar">
             <div id="progress-bar-fill" class="progress-bar-fill">0%</div>
         </div>
     </div>
+    <div id="name-input-container" class="mt-8 animate__animated animate__fadeInUp">
+        <div class="text-center">
+            <div class="title">Insira os Nomes dos Jogadores</div>
+        </div>
+        <div id="name-inputs" class="mt-8 flex flex-col items-center space-y-4">
+            <!-- Name inputs will be inserted here by JavaScript -->
+        </div>
+        <button onclick="startQuiz()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Iniciar Quiz</button>
+    </div>
     <div id="quiz-container" class="mt-8 animate__animated animate__fadeInUp hidden">
         <div class="text-center">
-            <div class="title">Desafio Bíblico</div>
+            <div class="title">Desafio Bíblico Multijogador</div>
         </div>
         <div id="question-container" class="mt-8">
             <!-- Questions will be inserted here by JavaScript -->
@@ -100,57 +109,148 @@
     <script>
         const questions = [
             {
-                question: "Quem foi lançado na cova dos leões?",
+                question: "Qual é o menor versículo da Bíblia?",
                 answers: [
-                    { text: "a) Moisés", correct: false },
-                    { text: "b) Elias", correct: false },
-                    { text: "c) Daniel", correct: true },
-                    { text: "d) José", correct: false }
+                    { text: "a) João 11:35", correct: true },
+                    { text: "b) Gênesis 1:1", correct: false },
+                    { text: "c) Salmos 23:1", correct: false },
+                    { text: "d) Mateus 5:3", correct: false }
                 ]
             },
             {
-                question: "Quem construiu a arca?",
+                question: "Quantos livros há no Antigo Testamento?",
                 answers: [
-                    { text: "a) Abraão", correct: false },
-                    { text: "b) Noé", correct: true },
-                    { text: "c) Davi", correct: false },
-                    { text: "d) Salomão", correct: false }
+                    { text: "a) 27", correct: false },
+                    { text: "b) 39", correct: true },
+                    { text: "c) 66", correct: false },
+                    { text: "d) 12", correct: false }
                 ]
             },
             {
-                question: "Quem foi engolido por um grande peixe?",
+                question: "Quem foi o sucessor de Moisés?",
                 answers: [
-                    { text: "a) Jonas", correct: true },
+                    { text: "a) Arão", correct: false },
+                    { text: "b) Josué", correct: true },
+                    { text: "c) Calebe", correct: false },
+                    { text: "d) Gideão", correct: false }
+                ]
+            },
+            {
+                question: "Qual é o último livro do Novo Testamento?",
+                answers: [
+                    { text: "a) Judas", correct: false },
+                    { text: "b) Apocalipse", correct: true },
+                    { text: "c) Hebreus", correct: false },
+                    { text: "d) Tiago", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi o primeiro mártir cristão?",
+                answers: [
+                    { text: "a) Tiago", correct: false },
                     { text: "b) Pedro", correct: false },
-                    { text: "c) Paulo", correct: false },
+                    { text: "c) Estêvão", correct: true },
+                    { text: "d) Paulo", correct: false }
+                ]
+            },
+            {
+                question: "Qual profeta foi engolido por um grande peixe?",
+                answers: [
+                    { text: "a) Elias", correct: false },
+                    { text: "b) Jonas", correct: true },
+                    { text: "c) Isaías", correct: false },
+                    { text: "d) Jeremias", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi o pai de Davi?",
+                answers: [
+                    { text: "a) Jessé", correct: true },
+                    { text: "b) Saul", correct: false },
+                    { text: "c) Salomão", correct: false },
+                    { text: "d) Samuel", correct: false }
+                ]
+            },
+            {
+                question: "Qual é o primeiro livro do Novo Testamento?",
+                answers: [
+                    { text: "a) Marcos", correct: false },
+                    { text: "b) Lucas", correct: false },
+                    { text: "c) Mateus", correct: true },
                     { text: "d) João", correct: false }
                 ]
             },
             {
-                question: "Quem recebeu os Dez Mandamentos?",
+                question: "Quem foi o autor da maioria das cartas do Novo Testamento?",
                 answers: [
-                    { text: "a) Josué", correct: false },
-                    { text: "b) Moisés", correct: true },
-                    { text: "c) Arão", correct: false },
-                    { text: "d) Davi", correct: false }
+                    { text: "a) Pedro", correct: false },
+                    { text: "b) João", correct: false },
+                    { text: "c) Paulo", correct: true },
+                    { text: "d) Tiago", correct: false }
                 ]
             },
             {
-                question: "Quem foi o primeiro homem?",
+                question: "Qual é o maior livro da Bíblia?",
                 answers: [
-                    { text: "a) Noé", correct: false },
-                    { text: "b) Abraão", correct: false },
-                    { text: "c) Adão", correct: true },
-                    { text: "d) Enoque", correct: false }
+                    { text: "a) Gênesis", correct: false },
+                    { text: "b) Salmos", correct: true },
+                    { text: "c) Isaías", correct: false },
+                    { text: "d) Jeremias", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi o rei que pediu sabedoria a Deus?",
+                answers: [
+                    { text: "a) Davi", correct: false },
+                    { text: "b) Salomão", correct: true },
+                    { text: "c) Saul", correct: false },
+                    { text: "d) Ezequias", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi o profeta que desafiou os profetas de Baal no Monte Carmelo?",
+                answers: [
+                    { text: "a) Elias", correct: true },
+                    { text: "b) Eliseu", correct: false },
+                    { text: "c) Isaías", correct: false },
+                    { text: "d) Jeremias", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi o profeta que previu o nascimento de Jesus em Belém?",
+                answers: [
+                    { text: "a) Isaías", correct: false },
+                    { text: "b) Miquéias", correct: true },
+                    { text: "c) Jeremias", correct: false },
+                    { text: "d) Ezequiel", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi o profeta que foi levado ao céu em uma carruagem de fogo?",
+                answers: [
+                    { text: "a) Elias", correct: true },
+                    { text: "b) Eliseu", correct: false },
+                    { text: "c) Ezequiel", correct: false },
+                    { text: "d) Isaías", correct: false }
+                ]
+            },
+            {
+                question: "Quem foi o profeta que interpretou o sonho do rei Nabucodonosor?",
+                answers: [
+                    { text: "a) Daniel", correct: true },
+                    { text: "b) José", correct: false },
+                    { text: "c) Jeremias", correct: false },
+                    { text: "d) Ezequiel", correct: false }
                 ]
             }
         ];
 
         let currentQuestionIndex = 0;
-        let scores = [0, 0, 0, 0];
+        let scores = Array(10).fill(0);
         let currentPlayer = 0;
         let timer;
         let timeLeft = 10;
+        let playerNames = [];
 
         function loadQuiz() {
             const quizContainer = document.getElementById('question-container');
@@ -191,7 +291,7 @@
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     currentQuestionIndex++;
-                    currentPlayer = (currentPlayer + 1) % 4;
+                    currentPlayer = (currentPlayer + 1) % playerNames.length;
                     loadQuiz();
                 }
             }, 1000);
@@ -207,7 +307,7 @@
             }
             setTimeout(() => {
                 currentQuestionIndex++;
-                currentPlayer = (currentPlayer + 1) % 4;
+                currentPlayer = (currentPlayer + 1) % playerNames.length;
                 loadQuiz();
             }, 1000);
         }
@@ -217,13 +317,11 @@
             document.getElementById('timer').classList.add('hidden');
             const resultElement = document.getElementById('result');
             resultElement.classList.remove('hidden');
-            resultElement.innerHTML = `
-                <p>Resultado:</p>
-                <p>Jogador 1: ${scores[0]} pontos</p>
-                <p>Jogador 2: ${scores[1]} pontos</p>
-                <p>Jogador 3: ${scores[2]} pontos</p>
-                <p>Jogador 4: ${scores[3]} pontos</p>
-            `;
+            let resultHTML = '<p>Resultado:</p>';
+            playerNames.forEach((name, index) => {
+                resultHTML += `<p>${name}: ${scores[index]} pontos</p>`;
+            });
+            resultElement.innerHTML = resultHTML;
         }
 
         function showQuiz() {
@@ -246,8 +344,31 @@
             }, 30); // Adjust the speed of the loading bar here
         }
 
-        window.onload = () => {
+        function startQuiz() {
+            const nameInputs = document.querySelectorAll('.player-name-input');
+            playerNames = Array.from(nameInputs).map(input => input.value.trim()).filter(name => name !== '');
+            if (playerNames.length < 2) {
+                alert('Por favor, insira pelo menos dois nomes de jogadores.');
+                return;
+            }
+            document.getElementById('name-input-container').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
             updateProgressBar();
+        }
+
+        function createNameInputs() {
+            const nameInputsContainer = document.getElementById('name-inputs');
+            for (let i = 0; i < 10; i++) {
+                const inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.placeholder = `Nome do Jogador ${i + 1}`;
+                inputElement.classList.add('player-name-input', 'border', 'border-gray-300', 'p-2', 'rounded');
+                nameInputsContainer.appendChild(inputElement);
+            }
+        }
+
+        window.onload = () => {
+            createNameInputs();
         };
     </script>
 </body>
