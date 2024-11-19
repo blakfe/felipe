@@ -76,6 +76,53 @@
             color: white;
             border-radius: 25px;
         }
+        .bracket {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .bracket-round {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .bracket-match {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 10px;
+        }
+        .bracket-player {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .eliminated {
+            background-color: red;
+        }
+        .qualified {
+            background-color: green;
+        }
+        .winner-screen {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: #FFD700;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px #000000;
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen">
@@ -105,6 +152,12 @@
         <div id="result" class="result mt-4 hidden">
             <!-- Result will be shown here -->
         </div>
+    </div>
+    <div id="bracket-container" class="bracket hidden">
+        <!-- Bracket will be inserted here by JavaScript -->
+    </div>
+    <div id="winner-screen" class="winner-screen hidden">
+        <div id="winner-message"></div>
     </div>
     <script>
         const questions = [
@@ -251,6 +304,8 @@
         let timer;
         let timeLeft = 10;
         let playerNames = [];
+        let eliminatedPlayers = [];
+        let round = 1;
 
         function loadQuiz() {
             const quizContainer = document.getElementById('question-container');
@@ -278,7 +333,7 @@
 
                 startTimer();
             } else {
-                showResult();
+                eliminatePlayer();
             }
         }
 
@@ -291,7 +346,7 @@
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     currentQuestionIndex++;
-                    currentPlayer = (currentPlayer + 1) % playerNames.length;
+                    currentPlayer = getNextPlayer();
                     loadQuiz();
                 }
             }, 1000);
@@ -307,21 +362,43 @@
             }
             setTimeout(() => {
                 currentQuestionIndex++;
-                currentPlayer = (currentPlayer + 1) % playerNames.length;
+                currentPlayer = getNextPlayer();
                 loadQuiz();
             }, 1000);
         }
 
-        function showResult() {
-            document.getElementById('question-container').classList.add('hidden');
-            document.getElementById('timer').classList.add('hidden');
-            const resultElement = document.getElementById('result');
-            resultElement.classList.remove('hidden');
-            let resultHTML = '<p>Resultado:</p>';
-            playerNames.forEach((name, index) => {
-                resultHTML += `<p>${name}: ${scores[index]} pontos</p>`;
-            });
-            resultElement.innerHTML = resultHTML;
+        function getNextPlayer() {
+            let nextPlayer = (currentPlayer + 1) % playerNames.length;
+            while (eliminatedPlayers.includes(playerNames[nextPlayer])) {
+                nextPlayer = (nextPlayer + 1) % playerNames.length;
+            }
+            return nextPlayer;
+        }
+
+        function eliminatePlayer() {
+            const minScore = Math.min(...scores.filter((_, index) => !eliminatedPlayers.includes(playerNames[index])));
+            const eliminatedIndex = scores.findIndex((score, index) => score === minScore && !eliminatedPlayers.includes(playerNames[index]));
+            eliminatedPlayers.push(playerNames[eliminatedIndex]);
+
+            if (playerNames.length - eliminatedPlayers.length > 2) {
+                currentQuestionIndex = 0;
+                round++;
+                updateBracket();
+                currentPlayer = getNextPlayer();
+                loadQuiz();
+            } else {
+                updateBracket();
+                showWinnerScreen();
+            }
+        }
+
+        function showWinnerScreen() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const winnerScreen = document.getElementById('winner-screen');
+            const winnerMessage = document.getElementById('winner-message');
+            const remainingPlayers = playerNames.filter(name => !eliminatedPlayers.includes(name));
+            winnerMessage.innerText = `Parabéns ${remainingPlayers[0]} e ${remainingPlayers[1]}! Vocês são os finalistas!`;
+            winnerScreen.classList.remove('hidden');
         }
 
         function showQuiz() {
@@ -354,6 +431,7 @@
             document.getElementById('name-input-container').classList.add('hidden');
             document.getElementById('loading-screen').classList.remove('hidden');
             updateProgressBar();
+            createBracket();
         }
 
         function createNameInputs() {
@@ -365,6 +443,43 @@
                 inputElement.classList.add('player-name-input', 'border', 'border-gray-300', 'p-2', 'rounded');
                 nameInputsContainer.appendChild(inputElement);
             }
+        }
+
+        function createBracket() {
+            const bracketContainer = document.getElementById('bracket-container');
+            bracketContainer.innerHTML = '';
+            const roundElement = document.createElement('div');
+            roundElement.classList.add('bracket-round');
+            playerNames.forEach(name => {
+                const matchElement = document.createElement('div');
+                matchElement.classList.add('bracket-match');
+                const playerElement = document.createElement('div');
+                playerElement.classList.add('bracket-player');
+                playerElement.innerText = name;
+                matchElement.appendChild(playerElement);
+                roundElement.appendChild(matchElement);
+            });
+            bracketContainer.appendChild(roundElement);
+            bracketContainer.classList.remove('hidden');
+        }
+
+        function updateBracket() {
+            const bracketContainer = document.getElementById('bracket-container');
+            const roundElement = document.createElement('div');
+            roundElement.classList.add('bracket-round');
+            playerNames.forEach(name => {
+                const matchElement = document.createElement('div');
+                matchElement.classList.add('bracket-match');
+                const playerElement = document.createElement('div');
+                playerElement.classList.add('bracket-player');
+                playerElement.innerText = name;
+                if (eliminatedPlayers.includes(name)) {
+                    playerElement.classList.add('eliminated');
+                }
+                matchElement.appendChild(playerElement);
+                roundElement.appendChild(matchElement);
+            });
+            bracketContainer.appendChild(roundElement);
         }
 
         window.onload = () => {
