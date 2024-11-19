@@ -380,7 +380,7 @@
             const eliminatedIndex = scores.findIndex((score, index) => score === minScore && !eliminatedPlayers.includes(playerNames[index]));
             eliminatedPlayers.push(playerNames[eliminatedIndex]);
 
-            if (playerNames.length - eliminatedPlayers.length > 2) {
+            if (playerNames.length - eliminatedPlayers.length > 1) {
                 currentQuestionIndex = 0;
                 round++;
                 updateBracket();
@@ -396,8 +396,8 @@
             document.getElementById('quiz-container').classList.add('hidden');
             const winnerScreen = document.getElementById('winner-screen');
             const winnerMessage = document.getElementById('winner-message');
-            const remainingPlayers = playerNames.filter(name => !eliminatedPlayers.includes(name));
-            winnerMessage.innerText = `Parabéns ${remainingPlayers[0]} e ${remainingPlayers[1]}! Vocês são os finalistas!`;
+            const remainingPlayer = playerNames.find(name => !eliminatedPlayers.includes(name));
+            winnerMessage.innerText = `Parabéns ${remainingPlayer}! Você é o vencedor!`;
             winnerScreen.classList.remove('hidden');
         }
 
