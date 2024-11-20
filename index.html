@@ -1,490 +1,184 @@
-<html>
+<html lang="en">
 <head>
-    <title>Desafio Bíblico Multijogador</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Quiz Bíblico</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
         body {
             font-family: 'Roboto', sans-serif;
-            background: url('https://i.ytimg.com/vi/5SrzrH_CWxY/maxresdefault.jpg') no-repeat center center fixed;
+            background-image: url('https://i.ytimg.com/vi/5SrzrH_CWxY/maxresdefault.jpg');
             background-size: cover;
+            background-position: center;
         }
-        .title {
-            font-size: 3rem;
-            color: #FFD700;
-            text-shadow: 2px 2px 4px #000000;
-        }
-        .question {
-            font-size: 1.5rem;
-            color: #FFFFFF;
-            text-shadow: 2px 2px 4px #000000;
-        }
-        .answer {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            color: #FFFFFF;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .answer:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .timer {
-            font-size: 2rem;
-            color: #FF4500;
-            text-shadow: 2px 2px 4px #000000;
-        }
-        .result {
-            font-size: 2rem;
-            color: #32CD32;
-            text-shadow: 2px 2px 4px #000000;
-        }
-        .loading {
-            font-size: 2rem;
-            color: #FFFFFF;
-            text-shadow: 2px 2px 4px #000000;
-        }
-        .loading-screen {
-            background-color: #000000;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .progress-bar {
-            width: 80%;
-            background-color: #ddd;
-            border-radius: 25px;
-            overflow: hidden;
-            margin-top: 20px;
-        }
-        .progress-bar-fill {
-            height: 30px;
-            width: 0;
-            background-color: #4caf50;
-            text-align: center;
-            line-height: 30px;
-            color: white;
-            border-radius: 25px;
-        }
-        .bracket {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .bracket-round {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .bracket-match {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0 10px;
-        }
-        .bracket-player {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #FFFFFF;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            text-align: center;
-        }
-        .eliminated {
-            background-color: red;
-        }
-        .qualified {
-            background-color: green;
-        }
-        .winner-screen {
-            background-color: rgba(0, 0, 0, 0.8);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            color: #FFD700;
-            font-size: 2rem;
-            text-shadow: 2px 2px 4px #000000;
+        .hidden {
+            display: none;
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen">
-    <div id="loading-screen" class="loading-screen hidden">
-        <div class="loading">Carregando...</div>
-        <div class="progress-bar">
-            <div id="progress-bar-fill" class="progress-bar-fill">0%</div>
+<body class="bg-gray-100 bg-opacity-75">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="flex flex-col items-center justify-center h-screen">
+        <h1 class="text-4xl font-bold text-white mb-4">Carregando...</h1>
+        <div class="w-1/2 bg-gray-300 rounded-full h-6">
+            <div id="loading-bar" class="bg-blue-500 h-6 rounded-full" style="width: 0%;"></div>
+        </div>
+        <p id="loading-percentage" class="text-white mt-2">0%</p>
+    </div>
+
+    <!-- Name Input Screen -->
+    <div id="name-input-screen" class="hidden flex flex-col items-center justify-center h-screen">
+        <h1 class="text-4xl font-bold text-white mb-4">Digite seu nome</h1>
+        <input id="player-name" type="text" class="p-2 rounded-lg mb-4" placeholder="Seu nome"/>
+        <button id="add-player" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300">Adicionar Jogador</button>
+        <div id="waiting-message" class="hidden text-white mt-4">Aguardando todos os jogadores entrarem...</div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="hidden grid grid-cols-2 grid-rows-2 gap-4 p-4 h-screen">
+        <div class="bg-white bg-opacity-90 shadow-md rounded-lg p-4 flex flex-col items-center justify-center">
+            <h2 class="text-2xl font-bold mb-4">Pergunta 1</h2>
+            <p class="mb-4">Qual foi o primeiro milagre de Jesus?</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-blue-700 transition duration-300">Transformar água em vinho</button>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-blue-700 transition duration-300">Curar um cego</button>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-blue-700 transition duration-300">Andar sobre as águas</button>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-blue-700 transition duration-300">Multiplicar pães e peixes</button>
+        </div>
+        <div class="bg-white bg-opacity-90 shadow-md rounded-lg p-4 flex flex-col items-center justify-center">
+            <h2 class="text-2xl font-bold mb-4">Pergunta 2</h2>
+            <p class="mb-4">Quem foi lançado na cova dos leões?</p>
+            <button class="bg-green-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-green-700 transition duration-300">Daniel</button>
+            <button class="bg-green-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-green-700 transition duration-300">José</button>
+            <button class="bg-green-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-green-700 transition duration-300">Moisés</button>
+            <button class="bg-green-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-green-700 transition duration-300">Abraão</button>
+        </div>
+        <div class="bg-white bg-opacity-90 shadow-md rounded-lg p-4 flex flex-col items-center justify-center">
+            <h2 class="text-2xl font-bold mb-4">Pergunta 3</h2>
+            <p class="mb-4">Qual é o primeiro livro da Bíblia?</p>
+            <button class="bg-red-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-red-700 transition duration-300">Gênesis</button>
+            <button class="bg-red-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-red-700 transition duration-300">Êxodo</button>
+            <button class="bg-red-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-red-700 transition duration-300">Levítico</button>
+            <button class="bg-red-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-red-700 transition duration-300">Números</button>
+        </div>
+        <div class="bg-white bg-opacity-90 shadow-md rounded-lg p-4 flex flex-col items-center justify-center">
+            <h2 class="text-2xl font-bold mb-4">Pergunta 4</h2>
+            <p class="mb-4">Quem construiu a arca?</p>
+            <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-yellow-700 transition duration-300">Noé</button>
+            <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-yellow-700 transition duration-300">Abraão</button>
+            <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-yellow-700 transition duration-300">Isaac</button>
+            <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg mb-2 hover:bg-yellow-700 transition duration-300">Jacó</button>
         </div>
     </div>
-    <div id="name-input-container" class="mt-8 animate__animated animate__fadeInUp">
-        <div class="text-center">
-            <div class="title">Insira os Nomes dos Jogadores</div>
-        </div>
-        <div id="name-inputs" class="mt-8 flex flex-col items-center space-y-4">
-            <!-- Name inputs will be inserted here by JavaScript -->
-        </div>
-        <button onclick="startQuiz()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Iniciar Quiz</button>
+
+    <!-- Final Screen -->
+    <div id="final-screen" class="hidden flex flex-col items-center justify-center h-screen">
+        <h1 class="text-4xl font-bold text-white mb-4">Parabéns!</h1>
+        <p class="text-2xl text-white mb-4">O vencedor é:</p>
+        <p id="winner-name" class="text-3xl font-bold text-yellow-500"></p>
     </div>
-    <div id="quiz-container" class="mt-8 animate__animated animate__fadeInUp hidden">
-        <div class="text-center">
-            <div class="title">Desafio Bíblico Multijogador</div>
-        </div>
-        <div id="question-container" class="mt-8">
-            <!-- Questions will be inserted here by JavaScript -->
-        </div>
-        <div id="timer" class="timer mt-4">Tempo: 10s</div>
-        <div id="result" class="result mt-4 hidden">
-            <!-- Result will be shown here -->
-        </div>
-    </div>
-    <div id="bracket-container" class="bracket hidden">
-        <!-- Bracket will be inserted here by JavaScript -->
-    </div>
-    <div id="winner-screen" class="winner-screen hidden">
-        <div id="winner-message"></div>
-    </div>
+
     <script>
-        const questions = [
-            {
-                question: "Qual é o menor versículo da Bíblia?",
-                answers: [
-                    { text: "a) João 11:35", correct: true },
-                    { text: "b) Gênesis 1:1", correct: false },
-                    { text: "c) Salmos 23:1", correct: false },
-                    { text: "d) Mateus 5:3", correct: false }
-                ]
-            },
-            {
-                question: "Quantos livros há no Antigo Testamento?",
-                answers: [
-                    { text: "a) 27", correct: false },
-                    { text: "b) 39", correct: true },
-                    { text: "c) 66", correct: false },
-                    { text: "d) 12", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o sucessor de Moisés?",
-                answers: [
-                    { text: "a) Arão", correct: false },
-                    { text: "b) Josué", correct: true },
-                    { text: "c) Calebe", correct: false },
-                    { text: "d) Gideão", correct: false }
-                ]
-            },
-            {
-                question: "Qual é o último livro do Novo Testamento?",
-                answers: [
-                    { text: "a) Judas", correct: false },
-                    { text: "b) Apocalipse", correct: true },
-                    { text: "c) Hebreus", correct: false },
-                    { text: "d) Tiago", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o primeiro mártir cristão?",
-                answers: [
-                    { text: "a) Tiago", correct: false },
-                    { text: "b) Pedro", correct: false },
-                    { text: "c) Estêvão", correct: true },
-                    { text: "d) Paulo", correct: false }
-                ]
-            },
-            {
-                question: "Qual profeta foi engolido por um grande peixe?",
-                answers: [
-                    { text: "a) Elias", correct: false },
-                    { text: "b) Jonas", correct: true },
-                    { text: "c) Isaías", correct: false },
-                    { text: "d) Jeremias", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o pai de Davi?",
-                answers: [
-                    { text: "a) Jessé", correct: true },
-                    { text: "b) Saul", correct: false },
-                    { text: "c) Salomão", correct: false },
-                    { text: "d) Samuel", correct: false }
-                ]
-            },
-            {
-                question: "Qual é o primeiro livro do Novo Testamento?",
-                answers: [
-                    { text: "a) Marcos", correct: false },
-                    { text: "b) Lucas", correct: false },
-                    { text: "c) Mateus", correct: true },
-                    { text: "d) João", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o autor da maioria das cartas do Novo Testamento?",
-                answers: [
-                    { text: "a) Pedro", correct: false },
-                    { text: "b) João", correct: false },
-                    { text: "c) Paulo", correct: true },
-                    { text: "d) Tiago", correct: false }
-                ]
-            },
-            {
-                question: "Qual é o maior livro da Bíblia?",
-                answers: [
-                    { text: "a) Gênesis", correct: false },
-                    { text: "b) Salmos", correct: true },
-                    { text: "c) Isaías", correct: false },
-                    { text: "d) Jeremias", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o rei que pediu sabedoria a Deus?",
-                answers: [
-                    { text: "a) Davi", correct: false },
-                    { text: "b) Salomão", correct: true },
-                    { text: "c) Saul", correct: false },
-                    { text: "d) Ezequias", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o profeta que desafiou os profetas de Baal no Monte Carmelo?",
-                answers: [
-                    { text: "a) Elias", correct: true },
-                    { text: "b) Eliseu", correct: false },
-                    { text: "c) Isaías", correct: false },
-                    { text: "d) Jeremias", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o profeta que previu o nascimento de Jesus em Belém?",
-                answers: [
-                    { text: "a) Isaías", correct: false },
-                    { text: "b) Miquéias", correct: true },
-                    { text: "c) Jeremias", correct: false },
-                    { text: "d) Ezequiel", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o profeta que foi levado ao céu em uma carruagem de fogo?",
-                answers: [
-                    { text: "a) Elias", correct: true },
-                    { text: "b) Eliseu", correct: false },
-                    { text: "c) Ezequiel", correct: false },
-                    { text: "d) Isaías", correct: false }
-                ]
-            },
-            {
-                question: "Quem foi o profeta que interpretou o sonho do rei Nabucodonosor?",
-                answers: [
-                    { text: "a) Daniel", correct: true },
-                    { text: "b) José", correct: false },
-                    { text: "c) Jeremias", correct: false },
-                    { text: "d) Ezequiel", correct: false }
-                ]
-            }
-        ];
+        document.addEventListener('DOMContentLoaded', function() {
+            let loadingPercentage = 0;
+            const loadingBar = document.getElementById('loading-bar');
+            const loadingPercentageText = document.getElementById('loading-percentage');
+            const loadingScreen = document.getElementById('loading-screen');
+            const nameInputScreen = document.getElementById('name-input-screen');
+            const quizScreen = document.getElementById('quiz-screen');
+            const finalScreen = document.getElementById('final-screen');
+            const addPlayerButton = document.getElementById('add-player');
+            const waitingMessage = document.getElementById('waiting-message');
+            const winnerName = document.getElementById('winner-name');
+            let players = [];
+            let currentQuestion = 0;
+            let scores = {};
 
-        let currentQuestionIndex = 0;
-        let scores = Array(10).fill(0);
-        let currentPlayer = 0;
-        let timer;
-        let timeLeft = 10;
-        let playerNames = [];
-        let eliminatedPlayers = [];
-        let round = 1;
-
-        function loadQuiz() {
-            const quizContainer = document.getElementById('question-container');
-            quizContainer.innerHTML = '';
-
-            if (currentQuestionIndex < questions.length) {
-                const q = questions[currentQuestionIndex];
-                const questionElement = document.createElement('div');
-                questionElement.classList.add('question', 'mt-8');
-                questionElement.innerText = q.question;
-
-                const answersContainer = document.createElement('div');
-                answersContainer.classList.add('flex', 'flex-col', 'items-center', 'mt-4', 'space-y-4');
-
-                q.answers.forEach(answer => {
-                    const answerElement = document.createElement('div');
-                    answerElement.classList.add('answer', 'animate__animated', 'animate__bounceIn');
-                    answerElement.innerText = answer.text;
-                    answerElement.onclick = () => checkAnswer(answerElement, answer.correct);
-                    answersContainer.appendChild(answerElement);
-                });
-
-                quizContainer.appendChild(questionElement);
-                quizContainer.appendChild(answersContainer);
-
-                startTimer();
-            } else {
-                eliminatePlayer();
-            }
-        }
-
-        function startTimer() {
-            timeLeft = 10;
-            document.getElementById('timer').innerText = `Tempo: ${timeLeft}s`;
-            timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').innerText = `Tempo: ${timeLeft}s`;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    currentQuestionIndex++;
-                    currentPlayer = getNextPlayer();
-                    loadQuiz();
+            const questions = [
+                {
+                    question: "Qual foi o primeiro milagre de Jesus?",
+                    answers: ["Transformar água em vinho", "Curar um cego", "Andar sobre as águas", "Multiplicar pães e peixes"],
+                    correct: 0
+                },
+                {
+                    question: "Quem foi lançado na cova dos leões?",
+                    answers: ["Daniel", "José", "Moisés", "Abraão"],
+                    correct: 0
+                },
+                {
+                    question: "Qual é o primeiro livro da Bíblia?",
+                    answers: ["Gênesis", "Êxodo", "Levítico", "Números"],
+                    correct: 0
+                },
+                {
+                    question: "Quem construiu a arca?",
+                    answers: ["Noé", "Abraão", "Isaac", "Jacó"],
+                    correct: 0
                 }
-            }, 1000);
-        }
+            ];
 
-        function checkAnswer(element, isCorrect) {
-            clearInterval(timer);
-            if (isCorrect) {
-                element.style.backgroundColor = 'green';
-                scores[currentPlayer]++;
-            } else {
-                element.style.backgroundColor = 'red';
-            }
-            setTimeout(() => {
-                currentQuestionIndex++;
-                currentPlayer = getNextPlayer();
-                loadQuiz();
-            }, 1000);
-        }
+            const loadingInterval = setInterval(() => {
+                loadingPercentage += 1;
+                loadingBar.style.width = loadingPercentage + '%';
+                loadingPercentageText.textContent = loadingPercentage + '%';
 
-        function getNextPlayer() {
-            let nextPlayer = (currentPlayer + 1) % playerNames.length;
-            while (eliminatedPlayers.includes(playerNames[nextPlayer])) {
-                nextPlayer = (nextPlayer + 1) % playerNames.length;
-            }
-            return nextPlayer;
-        }
-
-        function eliminatePlayer() {
-            const minScore = Math.min(...scores.filter((_, index) => !eliminatedPlayers.includes(playerNames[index])));
-            const eliminatedIndex = scores.findIndex((score, index) => score === minScore && !eliminatedPlayers.includes(playerNames[index]));
-            eliminatedPlayers.push(playerNames[eliminatedIndex]);
-
-            if (playerNames.length - eliminatedPlayers.length > 1) {
-                currentQuestionIndex = 0;
-                round++;
-                updateBracket();
-                currentPlayer = getNextPlayer();
-                loadQuiz();
-            } else {
-                updateBracket();
-                showWinnerScreen();
-            }
-        }
-
-        function showWinnerScreen() {
-            document.getElementById('quiz-container').classList.add('hidden');
-            const winnerScreen = document.getElementById('winner-screen');
-            const winnerMessage = document.getElementById('winner-message');
-            const remainingPlayer = playerNames.find(name => !eliminatedPlayers.includes(name));
-            winnerMessage.innerText = `Parabéns ${remainingPlayer}! Você é o vencedor!`;
-            winnerScreen.classList.remove('hidden');
-        }
-
-        function showQuiz() {
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('quiz-container').classList.remove('hidden');
-            loadQuiz();
-        }
-
-        function updateProgressBar() {
-            let progress = 0;
-            const progressBarFill = document.getElementById('progress-bar-fill');
-            const interval = setInterval(() => {
-                progress += 1;
-                progressBarFill.style.width = `${progress}%`;
-                progressBarFill.innerText = `${progress}%`;
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    showQuiz();
+                if (loadingPercentage >= 100) {
+                    clearInterval(loadingInterval);
+                    loadingScreen.classList.add('hidden');
+                    nameInputScreen.classList.remove('hidden');
                 }
-            }, 30); // Adjust the speed of the loading bar here
-        }
+            }, 50);
 
-        function startQuiz() {
-            const nameInputs = document.querySelectorAll('.player-name-input');
-            playerNames = Array.from(nameInputs).map(input => input.value.trim()).filter(name => name !== '');
-            if (playerNames.length < 2) {
-                alert('Por favor, insira pelo menos dois nomes de jogadores.');
-                return;
-            }
-            document.getElementById('name-input-container').classList.add('hidden');
-            document.getElementById('loading-screen').classList.remove('hidden');
-            updateProgressBar();
-            createBracket();
-        }
-
-        function createNameInputs() {
-            const nameInputsContainer = document.getElementById('name-inputs');
-            for (let i = 0; i < 10; i++) {
-                const inputElement = document.createElement('input');
-                inputElement.type = 'text';
-                inputElement.placeholder = `Nome do Jogador ${i + 1}`;
-                inputElement.classList.add('player-name-input', 'border', 'border-gray-300', 'p-2', 'rounded');
-                nameInputsContainer.appendChild(inputElement);
-            }
-        }
-
-        function createBracket() {
-            const bracketContainer = document.getElementById('bracket-container');
-            bracketContainer.innerHTML = '';
-            const roundElement = document.createElement('div');
-            roundElement.classList.add('bracket-round');
-            playerNames.forEach(name => {
-                const matchElement = document.createElement('div');
-                matchElement.classList.add('bracket-match');
-                const playerElement = document.createElement('div');
-                playerElement.classList.add('bracket-player');
-                playerElement.innerText = name;
-                matchElement.appendChild(playerElement);
-                roundElement.appendChild(matchElement);
+            addPlayerButton.addEventListener('click', () => {
+                const playerName = document.getElementById('player-name').value;
+                if (playerName) {
+                    players.push(playerName);
+                    scores[playerName] = 0;
+                    document.getElementById('player-name').value = '';
+                    if (players.length < 4) {
+                        waitingMessage.classList.remove('hidden');
+                    } else {
+                        nameInputScreen.classList.add('hidden');
+                        quizScreen.classList.remove('hidden');
+                        loadQuestion();
+                    }
+                }
             });
-            bracketContainer.appendChild(roundElement);
-            bracketContainer.classList.remove('hidden');
-        }
 
-        function updateBracket() {
-            const bracketContainer = document.getElementById('bracket-container');
-            const roundElement = document.createElement('div');
-            roundElement.classList.add('bracket-round');
-            playerNames.forEach(name => {
-                const matchElement = document.createElement('div');
-                matchElement.classList.add('bracket-match');
-                const playerElement = document.createElement('div');
-                playerElement.classList.add('bracket-player');
-                playerElement.innerText = name;
-                if (eliminatedPlayers.includes(name)) {
-                    playerElement.classList.add('eliminated');
+            function loadQuestion() {
+                if (currentQuestion < questions.length) {
+                    const questionData = questions[currentQuestion];
+                    const questionElements = quizScreen.querySelectorAll('.bg-white');
+                    questionElements.forEach((element, index) => {
+                        element.querySelector('h2').textContent = `Pergunta ${currentQuestion + 1}`;
+                        element.querySelector('p').textContent = questionData.question;
+                        const buttons = element.querySelectorAll('button');
+                        buttons.forEach((button, btnIndex) => {
+                            button.textContent = questionData.answers[btnIndex];
+                            button.onclick = () => {
+                                if (btnIndex === questionData.correct) {
+                                    scores[players[index]] += 1;
+                                }
+                                currentQuestion += 1;
+                                if (currentQuestion < questions.length) {
+                                    loadQuestion();
+                                } else {
+                                    showFinalScreen();
+                                }
+                            };
+                        });
+                    });
                 }
-                matchElement.appendChild(playerElement);
-                roundElement.appendChild(matchElement);
-            });
-            bracketContainer.appendChild(roundElement);
-        }
+            }
 
-        window.onload = () => {
-            createNameInputs();
-        };
+            function showFinalScreen() {
+                quizScreen.classList.add('hidden');
+                finalScreen.classList.remove('hidden');
+                const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+                winnerName.textContent = winner;
+            }
+        });
     </script>
 </body>
 </html>
